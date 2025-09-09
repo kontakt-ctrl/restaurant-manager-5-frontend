@@ -141,7 +141,7 @@ export async function getBestsellers() {
   }));
 }
 
-// Users – BRAK takich endpointów w backendzie! Wywołanie zwróci błąd!
+// Users
 export async function getUsers() {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/users/`, { headers: authHeader(token) });
@@ -157,4 +157,28 @@ export async function deleteUser(id: number) {
   });
   if (!res.ok) throw new Error("Błąd usuwania użytkownika");
   return res.json();
+}
+
+export async function createUser(data: { username: string; password: string; role: string }) {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/users`, {
+    method: "POST",
+    headers: { ...authHeader(token), "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  const result = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(result?.detail || "Błąd dodawania użytkownika");
+  return result;
+}
+
+export async function updateUser(id: number, data: { username: string; password: string; role: string }) {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/users/${id}`, {
+    method: "PUT",
+    headers: { ...authHeader(token), "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  const result = await res.json().catch(() => ({}));
+  if (!res.ok) throw new Error(result?.detail || "Błąd edycji użytkownika");
+  return result;
 }
