@@ -9,6 +9,7 @@ import MenuPage from "./pages/MenuPage";
 import MenuEditPage from "./pages/MenuEditPage";
 import StatsPage from "./pages/StatsPage";
 import UsersPage from "./pages/UsersPage";
+import UserEditPage from "./pages/UserEditPage";
 import MainLayout from "./layouts/MainLayout";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -31,6 +32,8 @@ export default function App() {
         <Route path="/menu/:id/edit" element={<MenuEditPage />} />
         <Route path="/stats" element={<StatsPage />} />
         <Route path="/users" element={<UsersPage />} />
+        <Route path="/users/new" element={<UserEditPage />} />
+        <Route path="/users/:id/edit" element={<UserEditPage />} />
       </Route>
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
