@@ -33,13 +33,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [token]);
 
   const login = async (username: string, password: string) => {
-    const { access_token, user } = await loginApi(username, password);
+    const { access_token } = await loginApi(username, password);
     setToken(access_token);
     localStorage.setItem("token", access_token);
+    // Pobierz dane usera przez /auth/me
+    const data = await getMe(access_token);
     setUser({
-      id: user.id,
-      username: user.username,
-      role: Array.isArray(user.roles) ? user.roles[0] : user.role || ""
+      id: data.id,
+      username: data.username,
+      role: Array.isArray(data.roles) ? data.roles[0] : data.role || ""
     });
   };
 
