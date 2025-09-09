@@ -112,21 +112,33 @@ export async function unblockMenuItem(id: number) {
   return res.json();
 }
 
-// Stats
+// Stats (MAPOWANIE do formatu oczekiwanego przez frontend)
 export async function getOrdersDailyStats() {
   const token = localStorage.getItem("token")!;
-  // POPRAWKA: /stats/orders/daily (nie orders-daily)
   const res = await fetch(`${API_URL}/stats/orders/daily`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania statystyk");
-  return res.json();
+  const data = await res.json();
+  // MAPUJEMY backend -> frontend
+  // backend: { terminal_stats: [{terminal_name, orders_count}, ...] }
+  // frontend oczekuje: [{terminal_name, orders_done}]
+  return (data.terminal_stats || []).map((stat: any) => ({
+    terminal_name: stat.terminal_name,
+    orders_done: stat.orders_count,
+  }));
 }
 
 export async function getBestsellers() {
   const token = localStorage.getItem("token")!;
-  // POPRAWKA: /stats/menu-items/top (nie bestsellers)
   const res = await fetch(`${API_URL}/stats/menu-items/top`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania bestsellerów");
-  return res.json();
+  const data = await res.json();
+  // MAPUJEMY backend -> frontend
+  // backend: [{menu_item_id, name, sold_count}, ...]
+  // frontend oczekuje: [{name, total}]
+  return (data || []).map((item: any) => ({
+    name: item.name,
+    total: item.sold_count,
+  }));
 }
 
 // Users – BRAK takich endpointów w backendzie! Wywołanie zwróci błąd!
