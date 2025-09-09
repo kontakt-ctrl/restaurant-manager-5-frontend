@@ -19,7 +19,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     if (token) {
       getMe(token)
-        .then(setUser)
+        .then(data => setUser({
+          id: data.id,
+          username: data.username,
+          role: Array.isArray(data.roles) ? data.roles[0] : data.role || ""
+        }))
         .catch(() => {
           setUser(null);
           setToken(null);
@@ -32,7 +36,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const { access_token, user } = await loginApi(username, password);
     setToken(access_token);
     localStorage.setItem("token", access_token);
-    setUser(user);
+    setUser({
+      id: user.id,
+      username: user.username,
+      role: Array.isArray(user.roles) ? user.roles[0] : user.role || ""
+    });
   };
 
   const logout = () => {
