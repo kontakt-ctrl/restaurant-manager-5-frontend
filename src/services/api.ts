@@ -26,7 +26,7 @@ export async function getMe(token: string) {
 // Orders
 export async function getPendingOrders() {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/orders/pending`, { headers: authHeader(token) });
+  const res = await fetch(`${API_URL}/orders?status=pending`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania zamówień");
   return res.json();
 }
