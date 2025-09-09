@@ -8,11 +8,10 @@ import { Paper, Typography, List, ListItem, ListItemText } from "@mui/material";
 
 export default function OrderDetailsPage() {
   const { id } = useParams<{ id: string }>();
-  const orderNumber = id; // order_number może być stringiem
   const { data: order, isLoading, error } = useQuery({
-    queryKey: ["orders", orderNumber],
-    queryFn: () => getOrderDetails(orderNumber),
-    enabled: !!orderNumber,
+    queryKey: ["orders", id],
+    queryFn: () => getOrderDetails(id!),
+    enabled: !!id,
   });
 
   if (isLoading) return <Loading />;
