@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getOrderDetails, getOrderEvents } from "../services/api";
+import { getOrderDetails } from "../services/api";
 import { Loading } from "../components/Loading";
 import { ErrorInfo } from "../components/ErrorInfo";
 import { Paper, Typography, List, ListItem, ListItemText } from "@mui/material";
@@ -12,11 +12,6 @@ export default function OrderDetailsPage() {
   const { data: order, isLoading, error } = useQuery({
     queryKey: ["orders", orderId],
     queryFn: () => getOrderDetails(orderId),
-    enabled: !!orderId,
-  });
-  const { data: events = [] } = useQuery({
-    queryKey: ["orders", orderId, "events"],
-    queryFn: () => getOrderEvents(orderId),
     enabled: !!orderId,
   });
 
@@ -37,17 +32,6 @@ export default function OrderDetailsPage() {
         {order.items.map((item: any) => (
           <ListItem key={item.id}>
             <ListItemText primary={`ID pozycji: ${item.menu_item_id}`} secondary={`Ilość: ${item.quantity}`} />
-          </ListItem>
-        ))}
-      </List>
-      <Typography variant="h6" mt={2}>Historia zdarzeń:</Typography>
-      <List>
-        {events.map((ev: any) => (
-          <ListItem key={ev.id}>
-            <ListItemText
-              primary={`${ev.event_type} (${ev.new_status || ""})`}
-              secondary={`Terminal: ${ev.terminal_name || "-"}, ${new Date(ev.timestamp).toLocaleString()}`}
-            />
           </ListItem>
         ))}
       </List>
