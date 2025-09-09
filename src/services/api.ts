@@ -31,9 +31,9 @@ export async function getPendingOrders() {
   return res.json();
 }
 
-export async function getOrderDetails(id: number) {
+export async function getOrderDetails(order_number: number) {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/orders/${id}`, { headers: authHeader(token) });
+  const res = await fetch(`${API_URL}/orders/${order_number}`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Nie znaleziono zamówienia");
   return res.json();
 }
