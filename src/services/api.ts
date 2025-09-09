@@ -38,6 +38,7 @@ export async function getOrderDetails(id: number) {
   return res.json();
 }
 
+// BRAK takiego endpointu w backendzie – wywołanie zwróci błąd!
 export async function getOrderEvents(id: number) {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/orders/${id}/events`, { headers: authHeader(token) });
@@ -55,7 +56,8 @@ export async function getMenuItems() {
 
 export async function getMenuItem(id: number) {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/menu/items?id=${id}`, { headers: authHeader(token) });
+  // POPRAWKA: używamy path param zamiast query param
+  const res = await fetch(`${API_URL}/menu/items/${id}`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Nie znaleziono pozycji menu");
   return res.json();
 }
@@ -89,10 +91,11 @@ export async function updateMenuItem(id: number, data: any) {
   return res.json();
 }
 
+// POPRAWKA: POST na /menu/items/{id}/block z query param is_available zgodnie z backendem
 export async function blockMenuItem(id: number) {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/menu/item/${id}/block`, {
-    method: "PUT",
+  const res = await fetch(`${API_URL}/menu/items/${id}/block?is_available=false`, {
+    method: "POST",
     headers: authHeader(token),
   });
   if (!res.ok) throw new Error("Błąd blokowania pozycji");
@@ -101,8 +104,8 @@ export async function blockMenuItem(id: number) {
 
 export async function unblockMenuItem(id: number) {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/menu/item/${id}/unblock`, {
-    method: "PUT",
+  const res = await fetch(`${API_URL}/menu/items/${id}/block?is_available=true`, {
+    method: "POST",
     headers: authHeader(token),
   });
   if (!res.ok) throw new Error("Błąd odblokowania pozycji");
@@ -112,19 +115,21 @@ export async function unblockMenuItem(id: number) {
 // Stats
 export async function getOrdersDailyStats() {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/stats/orders-daily`, { headers: authHeader(token) });
+  // POPRAWKA: /stats/orders/daily (nie orders-daily)
+  const res = await fetch(`${API_URL}/stats/orders/daily`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania statystyk");
   return res.json();
 }
 
 export async function getBestsellers() {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/stats/bestsellers`, { headers: authHeader(token) });
+  // POPRAWKA: /stats/menu-items/top (nie bestsellers)
+  const res = await fetch(`${API_URL}/stats/menu-items/top`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania bestsellerów");
   return res.json();
 }
 
-// Users
+// Users – BRAK takich endpointów w backendzie! Wywołanie zwróci błąd!
 export async function getUsers() {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/users/`, { headers: authHeader(token) });
