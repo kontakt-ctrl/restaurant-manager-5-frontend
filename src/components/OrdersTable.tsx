@@ -31,7 +31,7 @@ export function OrdersTable({ orders, showActions = false }: { orders: any[]; sh
                 <Button
                   variant="outlined"
                   size="small"
-                  onClick={() => navigate(`/orders/${order.order_number}`)}
+                  onClick={() => navigate(`/orders/${order.id}`)}
                 >
                   Szczegóły
                 </Button>
