@@ -144,7 +144,7 @@ export async function getBestsellers() {
 // Users
 export async function getUsers() {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/users/`, { headers: authHeader(token) });
+  const res = await fetch(`${API_URL}/users`, { headers: authHeader(token) }); // <- bez ukośnika na końcu!
   if (!res.ok) throw new Error("Błąd pobierania użytkowników");
   return res.json();
 }
