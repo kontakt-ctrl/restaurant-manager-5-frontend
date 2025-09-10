@@ -9,11 +9,13 @@ export function MenuTable({
   categories,
   onBlock,
   onUnblock,
+  onDelete, // <-- nowy props
 }: {
   items: any[];
   categories: any[];
   onBlock: (id: number) => void;
   onUnblock: (id: number) => void;
+  onDelete: (id: number) => void;
 }) {
   function getCategoryName(id: number) {
     return categories.find((c: any) => c.id === id)?.name_pl || "-";
@@ -60,6 +62,14 @@ export function MenuTable({
                 sx={{ ml: 1 }}
               >
                 Edytuj
+              </Button>
+              <Button
+                size="small"
+                color="error"
+                sx={{ ml: 1 }}
+                onClick={() => onDelete(item.id)}
+              >
+                Usuń pozycję
               </Button>
             </TableCell>
           </TableRow>
