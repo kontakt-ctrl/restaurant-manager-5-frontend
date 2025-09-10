@@ -4,10 +4,18 @@ import dayjs from "dayjs";
 import { Paper, Typography, Box, TextField, Grid } from "@mui/material";
 import { Loading } from "../components/Loading";
 import { ErrorInfo } from "../components/ErrorInfo";
-import { LineChart, Line, XAxis, YAxis, Tooltip, CartesianGrid, BarChart, Bar, ResponsiveContainer } from "recharts";
-
-// --- MOCK API FUNCTIONS ---
-// Zamiast prawdziwych API, podmień na swoje endpointy z parametrem daty!
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  CartesianGrid,
+  BarChart,
+  Bar,
+  ResponsiveContainer,
+  Label
+} from "recharts";
 import {
   getOrdersStatsByDay,
   getBestSellersByDay,
@@ -84,28 +92,53 @@ export default function StatsPage() {
         </Grid>
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 2 }}>
-            <Typography variant="h6">Najlepiej sprzedające się produkty (wykres kreskowy)</Typography>
-            <ResponsiveContainer width="100%" height={280}>
-              <LineChart data={bestsellerChartData}>
+            <Typography variant="h6" sx={{ mb: 2 }}>Najlepiej sprzedające się produkty (wykres kreskowy)</Typography>
+            <ResponsiveContainer width="100%" minHeight={420}>
+              <LineChart
+                data={bestsellerChartData}
+                margin={{ top: 40, right: 60, left: 20, bottom: 90 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis allowDecimals={false} />
+                <XAxis
+                  dataKey="name"
+                  angle={-30}
+                  textAnchor="end"
+                  interval={0}
+                  height={85}
+                  style={{ fontSize: 15, fontFamily: "Roboto, Arial, sans-serif" }}
+                />
+                <YAxis allowDecimals={false}>
+                  <Label angle={-90} value="Sprzedano" position="insideLeft" style={{ fontSize: 16 }} />
+                </YAxis>
                 <Tooltip />
-                <Line type="monotone" dataKey="Sprzedano" stroke="#1976d2" strokeWidth={3} />
+                <Line type="monotone" dataKey="Sprzedano" stroke="#1976d2" strokeWidth={3} dot={{ r: 5 }} />
               </LineChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
         <Grid item xs={12}>
           <Paper sx={{ p: 2 }}>
-            <Typography variant="h6">Godziny szczytu (najwięcej zamówień wg godzin)</Typography>
-            <ResponsiveContainer width="100%" height={260}>
-              <BarChart data={hoursChartData}>
+            <Typography variant="h6" sx={{ mb: 2 }}>Godziny szczytu (najwięcej zamówień wg godzin)</Typography>
+            <ResponsiveContainer width="100%" minHeight={360}>
+              <BarChart
+                data={hoursChartData}
+                margin={{ top: 40, right: 40, left: 25, bottom: 60 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="godzina" />
-                <YAxis allowDecimals={false} />
+                <XAxis
+                  dataKey="godzina"
+                  interval={0}
+                  angle={0}
+                  height={50}
+                  style={{ fontSize: 15, fontFamily: "Roboto, Arial, sans-serif" }}
+                >
+                  <Label value="Godzina" position="insideBottom" style={{ fontSize: 16 }} />
+                </XAxis>
+                <YAxis allowDecimals={false}>
+                  <Label angle={-90} value="Zamówienia" position="insideLeft" style={{ fontSize: 16 }} />
+                </YAxis>
                 <Tooltip />
-                <Bar dataKey="Zamówienia" fill="#1976d2" />
+                <Bar dataKey="Zamówienia" fill="#1976d2" barSize={32} />
               </BarChart>
             </ResponsiveContainer>
           </Paper>
@@ -114,15 +147,3 @@ export default function StatsPage() {
     </>
   );
 }
-
-/*
-W pliku src/services/api.ts musisz mieć funkcje:
-- getOrdersStatsByDay(date: string): Promise<{ordersCount: number}>
-- getBestSellersByDay(date: string): Promise<{name: string, total: number}[]>
-- getOrderHoursStatsByDay(date: string): Promise<{hour: string, count: number}[]>
-
-Przykład implementacji:
-export async function getOrdersStatsByDay(date: string) { ... }
-export async function getBestSellersByDay(date: string) { ... }
-export async function getOrderHoursStatsByDay(date: string) { ... }
-*/
