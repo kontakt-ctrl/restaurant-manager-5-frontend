@@ -11,6 +11,9 @@ import StatsPage from "./pages/StatsPage";
 import UsersPage from "./pages/UsersPage";
 import UserEditPage from "./pages/UserEditPage";
 import MainLayout from "./layouts/MainLayout";
+// Nowe importy
+import CategoriesPage from "./pages/CategoriesPage";
+import CategoryEditPage from "./pages/CategoryEditPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -30,6 +33,9 @@ export default function App() {
         <Route path="/menu" element={<MenuPage />} />
         <Route path="/menu/new" element={<MenuEditPage />} />
         <Route path="/menu/:id/edit" element={<MenuEditPage />} />
+        <Route path="/categories" element={<CategoriesPage />} />
+        <Route path="/categories/new" element={<CategoryEditPage />} />
+        <Route path="/categories/:id/edit" element={<CategoryEditPage />} />
         <Route path="/stats" element={<StatsPage />} />
         <Route path="/users" element={<UsersPage />} />
         <Route path="/users/new" element={<UserEditPage />} />
