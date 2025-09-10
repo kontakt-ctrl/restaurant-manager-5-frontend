@@ -5,6 +5,7 @@ import { MenuTable } from "../components/MenuTable";
 import { Loading } from "../components/Loading";
 import { ErrorInfo } from "../components/ErrorInfo";
 import { Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 export default function MenuPage() {
   const queryClient = useQueryClient();
@@ -43,7 +44,14 @@ export default function MenuPage() {
         onUnblock={unblockMutation.mutate}
         onDelete={(id) => setDeletingId(id)}
       />
-      <Button variant="contained" sx={{ mt: 2 }} href="/menu/new">Dodaj pozycję</Button>
+      <Button
+        variant="contained"
+        sx={{ mt: 2 }}
+        component={RouterLink}
+        to="/menu/new"
+      >
+        Dodaj pozycję
+      </Button>
       <Dialog open={!!deletingId} onClose={() => setDeletingId(null)}>
         <DialogTitle>Usuń pozycję</DialogTitle>
         <DialogContent>
