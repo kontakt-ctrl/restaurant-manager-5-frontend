@@ -202,6 +202,42 @@ export async function getBestsellers() {
   }));
 }
 
+// --- Statystyki dzienne dla wybranej daty ---
+export async function getOrdersStatsByDay(date: string) {
+  const token = localStorage.getItem("token")!;
+  // date_to = date + 1 dzień
+  const dateObj = new Date(date);
+  dateObj.setDate(dateObj.getDate() + 1);
+  const date_to = dateObj.toISOString().slice(0, 10);
+  const url = `${API_URL}/orders?date_from=${date}&date_to=${date_to}`;
+  const res = await fetch(url, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania statystyk zamówień");
+  const data = await res.json();
+  return { ordersCount: Array.isArray(data) ? data.length : 0 };
+}
+
+export async function getBestSellersByDay(date: string) {
+  const token = localStorage.getItem("token")!;
+  const dateObj = new Date(date);
+  dateObj.setDate(dateObj.getDate() + 1);
+  const date_to = dateObj.toISOString().slice(0, 10);
+  const url = `${API_URL}/stats/menu-items/top?date_from=${date}&date_to=${date_to}`;
+  const res = await fetch(url, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania bestsellerów");
+  return res.json();
+}
+
+export async function getOrderHoursStatsByDay(date: string) {
+  const token = localStorage.getItem("token")!;
+  const dateObj = new Date(date);
+  dateObj.setDate(dateObj.getDate() + 1);
+  const date_to = dateObj.toISOString().slice(0, 10);
+  const url = `${API_URL}/stats/orders/hours?date_from=${date}&date_to=${date_to}`;
+  const res = await fetch(url, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania godzin szczytu");
+  return res.json();
+}
+
 // Users
 export async function getUsers() {
   const token = localStorage.getItem("token")!;
