@@ -16,6 +16,7 @@ export default function MainLayout() {
           </Typography>
           <Button color="inherit" component={Link} to="/dashboard">Dashboard</Button>
           <Button color="inherit" component={Link} to="/orders">Zamówienia</Button>
+          <Button color="inherit" component={Link} to="/orders/completed">Zamówienia zrealizowane</Button>
           <Button color="inherit" component={Link} to="/menu">Menu</Button>
           <Button color="inherit" component={Link} to="/categories">Kategorie</Button>
           <Button color="inherit" component={Link} to="/stats">Statystyki</Button>
