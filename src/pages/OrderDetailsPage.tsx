@@ -1,7 +1,7 @@
 import React from "react";
 import { useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
-import { getOrderDetails } from "../services/api";
+import { getOrderDetails, getMenuItems } from "../services/api";
 import { Loading } from "../components/Loading";
 import { ErrorInfo } from "../components/ErrorInfo";
 import { Paper, Typography, List, ListItem, ListItemText } from "@mui/material";
@@ -15,7 +15,18 @@ export default function OrderDetailsPage() {
     enabled: !!orderNumber,
   });
 
-  if (isLoading) return <Loading />;
+  // DODAJ: pobieranie menu
+  const { data: menuItems } = useQuery({
+    queryKey: ["menu", "items"],
+    queryFn: getMenuItems,
+  });
+
+  // DODAJ: funkcja do pobierania nazwy produktu po ID
+  function getMenuItemName(id: number) {
+    return menuItems?.find((item: any) => item.id === id)?.name_pl || `ID pozycji: ${id}`;
+  }
+
+  if (isLoading || !menuItems) return <Loading />;
   if (error) return <ErrorInfo error={error} />;
   if (!order) return <Typography>Nie znaleziono zamówienia.</Typography>;
 
@@ -31,7 +42,10 @@ export default function OrderDetailsPage() {
       <List>
         {order.items.map((item: any) => (
           <ListItem key={item.id}>
-            <ListItemText primary={`ID pozycji: ${item.menu_item_id}`} secondary={`Ilość: ${item.quantity}`} />
+            <ListItemText
+              primary={getMenuItemName(item.menu_item_id)}
+              secondary={`Ilość: ${item.quantity}`}
+            />
           </ListItem>
         ))}
       </List>
