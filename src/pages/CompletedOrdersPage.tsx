@@ -2,19 +2,20 @@ import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { getCompletedOrders } from "../services/api";
 import {
-  Typography, Box, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, Button, Table, TableHead, TableRow, TableCell, TableBody, TextField
+  Typography, Box, Dialog, DialogTitle, DialogContent, DialogActions, Button, Table, TableHead, TableRow, TableCell, TableBody, TextField
 } from "@mui/material";
-import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
 import dayjs from "dayjs";
 
+// Prosty komponent do wyboru daty
 function DatePicker({ value, onChange }: { value: string, onChange: (v: string) => void }) {
   return (
     <TextField
       type="date"
+      label="Wybierz datę"
       value={value}
       onChange={e => onChange(e.target.value)}
       size="small"
-      sx={{ width: 160 }}
+      sx={{ width: 200 }}
       inputProps={{ max: dayjs().format("YYYY-MM-DD") }}
     />
   );
@@ -42,10 +43,9 @@ export default function CompletedOrdersPage() {
   return (
     <Box>
       <Box mb={2} display="flex" alignItems="center" gap={2}>
-        <Typography variant="h5">Zamówienia zrealizowane {date === dayjs().format("YYYY-MM-DD") ? "dzisiaj" : date}</Typography>
-        <IconButton aria-label="Wybierz datę" onClick={() => {}}>
-          <CalendarTodayIcon />
-        </IconButton>
+        <Typography variant="h5">
+          Zamówienia zrealizowane {date === dayjs().format("YYYY-MM-DD") ? "dzisiaj" : date}
+        </Typography>
         <DatePicker value={date} onChange={setDate} />
       </Box>
       {isLoading && <Typography>Ładowanie...</Typography>}
@@ -83,8 +83,6 @@ export default function CompletedOrdersPage() {
           )}
         </TableBody>
       </Table>
-
-      {/* Szczegóły zamówienia */}
       <Dialog open={!!selected} onClose={() => setSelected(null)} maxWidth="sm" fullWidth>
         <DialogTitle>Szczegóły zamówienia</DialogTitle>
         <DialogContent dividers>
