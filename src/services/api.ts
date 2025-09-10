@@ -56,7 +56,6 @@ export async function getMenuItems() {
 
 export async function getMenuItem(id: number) {
   const token = localStorage.getItem("token")!;
-  // POPRAWKA: używamy path param zamiast query param
   const res = await fetch(`${API_URL}/menu/items/${id}`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Nie znaleziono pozycji menu");
   return res.json();
@@ -109,6 +108,17 @@ export async function unblockMenuItem(id: number) {
     headers: authHeader(token),
   });
   if (!res.ok) throw new Error("Błąd odblokowania pozycji");
+  return res.json();
+}
+
+// NOWA FUNKCJA: USUWANIE POZYCJI MENU
+export async function deleteMenuItem(id: number) {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/menu/items/${id}`, {
+    method: "DELETE",
+    headers: authHeader(token),
+  });
+  if (!res.ok) throw new Error("Błąd usuwania pozycji");
   return res.json();
 }
 
