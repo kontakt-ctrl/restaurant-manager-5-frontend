@@ -34,12 +34,10 @@ export async function getCategories() {
 // Dodaj kategorię
 export async function createCategory(data: { name_pl: string; name_en: string; image_url: string }) {
   const token = localStorage.getItem("token")!;
-  // API wymaga id, name_pl, name_en, image_url
-  const body = { id: 0, ...data }; // id = 0, backend zignoruje
   const res = await fetch(`${API_URL}/menu/categories`, {
     method: "POST",
     headers: { ...authHeader(token), "Content-Type": "application/json" },
-    body: JSON.stringify(body),
+    body: JSON.stringify(data), // NIE wysyłaj id!
   });
   if (!res.ok) throw new Error("Błąd dodawania kategorii");
   return res.json();
