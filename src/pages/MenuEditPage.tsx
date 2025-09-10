@@ -3,7 +3,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMenuItem, updateMenuItem, getMenuCategories, createMenuItem } from "../services/api";
 import { Loading } from "../components/Loading";
-import { ErrorInfo } from "../components/ErrorInfo";
 import { Typography, TextField, Button, MenuItem, Box } from "@mui/material";
 
 export default function MenuEditPage() {
@@ -18,7 +17,7 @@ export default function MenuEditPage() {
     enabled: isEdit,
   });
 
-  // Ustaw form jako null, potem ustaw po pobraniu menuItem
+  // Dodajemy pole name_en do stanu!
   const [form, setForm] = useState<any>(null);
 
   useEffect(() => {
@@ -27,6 +26,7 @@ export default function MenuEditPage() {
         setForm({
           category_id: String(menuItem.category_id ?? ""),
           name_pl: menuItem.name_pl ?? "",
+          name_en: menuItem.name_en ?? "",
           price_cents: String(menuItem.price_cents ?? ""),
           image_url: menuItem.image_url ?? "",
         });
@@ -35,6 +35,7 @@ export default function MenuEditPage() {
       setForm({
         category_id: "",
         name_pl: "",
+        name_en: "",
         price_cents: "",
         image_url: "",
       });
@@ -43,8 +44,17 @@ export default function MenuEditPage() {
 
   const mutation = useMutation({
     mutationFn: (data: any) => {
-      if (isEdit) return updateMenuItem(Number(id), { ...data, price_cents: Number(data.price_cents), category_id: Number(data.category_id) });
-      return createMenuItem({ ...data, price_cents: Number(data.price_cents), category_id: Number(data.category_id) });
+      // Dodajemy przekazanie wszystkich pól wymaganych przez backend!
+      const payload = {
+        category_id: Number(data.category_id),
+        name_pl: data.name_pl,
+        name_en: data.name_en,
+        price_cents: Number(data.price_cents),
+        image_url: data.image_url,
+        is_available: menuItem?.is_available ?? true, // domyślnie true lub stan z backendu
+      };
+      if (isEdit) return updateMenuItem(Number(id), payload);
+      return createMenuItem(payload);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["menu", "items"] });
@@ -87,6 +97,8 @@ export default function MenuEditPage() {
           ))}
         </TextField>
         <TextField label="Nazwa (PL)" name="name_pl" value={form.name_pl} onChange={handleChange}
+          required fullWidth margin="normal" />
+        <TextField label="Nazwa (EN)" name="name_en" value={form.name_en} onChange={handleChange}
           required fullWidth margin="normal" />
         <TextField label="Cena (gr)" name="price_cents" type="number" value={form.price_cents} onChange={handleChange}
           required fullWidth margin="normal" />
