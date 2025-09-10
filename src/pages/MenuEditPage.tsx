@@ -5,6 +5,23 @@ import { getMenuItem, updateMenuItem, getMenuCategories, createMenuItem } from "
 import { Loading } from "../components/Loading";
 import { Typography, TextField, Button, MenuItem, Box, FormControlLabel, Switch } from "@mui/material";
 
+const LANG_FIELDS = [
+  { name: "name_en", label: "Nazwa (EN)" },
+  { name: "name_de", label: "Nazwa (DE)" },
+  { name: "name_fr", label: "Nazwa (FR)" },
+  { name: "name_es", label: "Nazwa (ES)" },
+  { name: "name_uk", label: "Nazwa (UK)" },
+  { name: "name_cs", label: "Nazwa (CS)" },
+  { name: "name_sk", label: "Nazwa (SK)" },
+  { name: "name_no", label: "Nazwa (NO)" },
+  { name: "name_sv", label: "Nazwa (SV)" },
+  { name: "name_da", label: "Nazwa (DA)" },
+  { name: "name_ru", label: "Nazwa (RU)" },
+  { name: "name_zh", label: "Nazwa (ZH)" },
+  { name: "name_ja", label: "Nazwa (JA)" },
+  { name: "name_ar", label: "Nazwa (AR)" },
+];
+
 export default function MenuEditPage() {
   const { id } = useParams<{ id?: string }>();
   const isEdit = Boolean(id);
@@ -17,7 +34,6 @@ export default function MenuEditPage() {
     enabled: isEdit,
   });
 
-  // Dodaj pole is_available do stanu!
   const [form, setForm] = useState<any>(null);
 
   useEffect(() => {
@@ -26,20 +42,20 @@ export default function MenuEditPage() {
         setForm({
           category_id: String(menuItem.category_id ?? ""),
           name_pl: menuItem.name_pl ?? "",
-          name_en: menuItem.name_en ?? "",
           price_cents: String(menuItem.price_cents ?? ""),
           image_url: menuItem.image_url ?? "",
           is_available: menuItem.is_available ?? true,
+          ...LANG_FIELDS.reduce((acc, fld) => ({ ...acc, [fld.name]: menuItem[fld.name] ?? "" }), {}),
         });
       }
     } else {
       setForm({
         category_id: "",
         name_pl: "",
-        name_en: "",
         price_cents: "",
         image_url: "",
         is_available: true,
+        ...LANG_FIELDS.reduce((acc, fld) => ({ ...acc, [fld.name]: "" }), {}),
       });
     }
   }, [menuItem, isEdit]);
@@ -50,10 +66,10 @@ export default function MenuEditPage() {
         ...(isEdit ? { id: Number(id) } : {}),
         category_id: Number(data.category_id),
         name_pl: data.name_pl,
-        name_en: data.name_en,
         price_cents: Number(data.price_cents),
         image_url: data.image_url,
         is_available: Boolean(data.is_available),
+        ...LANG_FIELDS.reduce((acc, fld) => ({ ...acc, [fld.name]: data[fld.name] }), {}),
       };
       if (isEdit) return updateMenuItem(Number(id), payload);
       return createMenuItem(payload);
@@ -103,8 +119,17 @@ export default function MenuEditPage() {
         </TextField>
         <TextField label="Nazwa (PL)" name="name_pl" value={form.name_pl} onChange={handleChange}
           required fullWidth margin="normal" />
-        <TextField label="Nazwa (EN)" name="name_en" value={form.name_en} onChange={handleChange}
-          required fullWidth margin="normal" />
+        {LANG_FIELDS.map(fld => (
+          <TextField
+            key={fld.name}
+            label={fld.label}
+            name={fld.name}
+            value={form[fld.name]}
+            onChange={handleChange}
+            fullWidth
+            margin="normal"
+          />
+        ))}
         <TextField label="Cena (gr)" name="price_cents" type="number" value={form.price_cents} onChange={handleChange}
           required fullWidth margin="normal" />
         <TextField
