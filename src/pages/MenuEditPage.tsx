@@ -18,20 +18,31 @@ export default function MenuEditPage() {
     enabled: isEdit,
   });
 
-  const [form, setForm] = useState<any>({
-    category_id: "",
-    name_pl: "",
-    price_cents: "",
-  });
+  // Ustaw form jako null, potem ustaw po pobraniu menuItem
+  const [form, setForm] = useState<any>(null);
 
   useEffect(() => {
-    if (menuItem) setForm(menuItem);
-  }, [menuItem]);
+    if (isEdit) {
+      if (menuItem) {
+        setForm({
+          category_id: String(menuItem.category_id ?? ""),
+          name_pl: menuItem.name_pl ?? "",
+          price_cents: String(menuItem.price_cents ?? ""),
+        });
+      }
+    } else {
+      setForm({
+        category_id: "",
+        name_pl: "",
+        price_cents: "",
+      });
+    }
+  }, [menuItem, isEdit]);
 
   const mutation = useMutation({
     mutationFn: (data: any) => {
-      if (isEdit) return updateMenuItem(Number(id), data);
-      return createMenuItem(data);
+      if (isEdit) return updateMenuItem(Number(id), { ...data, price_cents: Number(data.price_cents), category_id: Number(data.category_id) });
+      return createMenuItem({ ...data, price_cents: Number(data.price_cents), category_id: Number(data.category_id) });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["menu", "items"] });
@@ -40,15 +51,18 @@ export default function MenuEditPage() {
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    setForm((f: any) => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm((f: any) => ({ ...f, [name]: value }));
   }
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    mutation.mutate(form);
+    if (form) {
+      mutation.mutate(form);
+    }
   }
 
-  if (isEdit && isLoading) return <Loading />;
+  if ((isEdit && (isLoading || !form)) || !form) return <Loading />;
 
   return (
     <Box maxWidth={480} mx="auto">
@@ -67,7 +81,7 @@ export default function MenuEditPage() {
           margin="normal"
         >
           {categories.map((cat: any) => (
-            <MenuItem key={cat.id} value={cat.id}>{cat.name_pl}</MenuItem>
+            <MenuItem key={cat.id} value={String(cat.id)}>{cat.name_pl}</MenuItem>
           ))}
         </TextField>
         <TextField label="Nazwa (PL)" name="name_pl" value={form.name_pl} onChange={handleChange}
