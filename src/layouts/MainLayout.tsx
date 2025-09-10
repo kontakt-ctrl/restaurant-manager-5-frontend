@@ -17,6 +17,7 @@ export default function MainLayout() {
           <Button color="inherit" component={Link} to="/dashboard">Dashboard</Button>
           <Button color="inherit" component={Link} to="/orders">Zamówienia</Button>
           <Button color="inherit" component={Link} to="/menu">Menu</Button>
+          <Button color="inherit" component={Link} to="/categories">Kategorie</Button>
           <Button color="inherit" component={Link} to="/stats">Statystyki</Button>
           {user?.role === "admin" && (
             <Button color="inherit" component={Link} to="/users">Użytkownicy</Button>
