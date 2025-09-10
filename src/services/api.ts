@@ -83,10 +83,14 @@ export async function getOrderDetails(id: number) {
 }
 
 // Pobierz zrealizowane zamówienia po dacie (status = 'ready')
+// date_to ustawione na dzień po wybranej dacie
 export async function getCompletedOrders(date: string) {
   const token = localStorage.getItem("token")!;
+  // Dodaj 1 dzień do daty
   const date_from = date;
-  const date_to = date;
+  const dateObj = new Date(date);
+  dateObj.setDate(dateObj.getDate() + 1);
+  const date_to = dateObj.toISOString().slice(0, 10);
   const url = `${API_URL}/orders?status=ready&date_from=${date_from}&date_to=${date_to}`;
   const res = await fetch(url, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania zrealizowanych zamówień");
