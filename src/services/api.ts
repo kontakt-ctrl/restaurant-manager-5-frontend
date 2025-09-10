@@ -37,7 +37,7 @@ export async function createCategory(data: { name_pl: string; name_en: string; i
   const res = await fetch(`${API_URL}/menu/categories`, {
     method: "POST",
     headers: { ...authHeader(token), "Content-Type": "application/json" },
-    body: JSON.stringify(data), // NIE wysyłaj id!
+    body: JSON.stringify(data),
   });
   if (!res.ok) throw new Error("Błąd dodawania kategorii");
   return res.json();
@@ -79,6 +79,17 @@ export async function getOrderDetails(id: number) {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/orders/${id}`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Nie znaleziono zamówienia");
+  return res.json();
+}
+
+// Nowa funkcja: pobieranie zrealizowanych zamówień po dacie
+export async function getCompletedOrders(date: string) {
+  const token = localStorage.getItem("token")!;
+  const date_from = date;
+  const date_to = date;
+  const url = `${API_URL}/orders?status=completed&date_from=${date_from}&date_to=${date_to}`;
+  const res = await fetch(url, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania zrealizowanych zamówień");
   return res.json();
 }
 
@@ -134,7 +145,6 @@ export async function updateMenuItem(id: number, data: any) {
   return res.json();
 }
 
-// POPRAWKA: POST na /menu/items/{id}/block z query param is_available zgodnie z backendem
 export async function blockMenuItem(id: number) {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/menu/items/${id}/block?is_available=false`, {
@@ -155,7 +165,6 @@ export async function unblockMenuItem(id: number) {
   return res.json();
 }
 
-// NOWA FUNKCJA: USUWANIE POZYCJI MENU
 export async function deleteMenuItem(id: number) {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/menu/items/${id}`, {
@@ -172,9 +181,6 @@ export async function getOrdersDailyStats() {
   const res = await fetch(`${API_URL}/stats/orders/daily`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania statystyk");
   const data = await res.json();
-  // MAPUJEMY backend -> frontend
-  // backend: { terminal_stats: [{terminal_name, orders_count}, ...] }
-  // frontend oczekuje: [{terminal_name, orders_done}]
   return (data.terminal_stats || []).map((stat: any) => ({
     terminal_name: stat.terminal_name,
     orders_done: stat.orders_count,
@@ -186,9 +192,6 @@ export async function getBestsellers() {
   const res = await fetch(`${API_URL}/stats/menu-items/top`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania bestsellerów");
   const data = await res.json();
-  // MAPUJEMY backend -> frontend
-  // backend: [{menu_item_id, name, sold_count}, ...]
-  // frontend oczekuje: [{name, total}]
   return (data || []).map((item: any) => ({
     name: item.name,
     total: item.sold_count,
@@ -198,7 +201,7 @@ export async function getBestsellers() {
 // Users
 export async function getUsers() {
   const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/users`, { headers: authHeader(token) }); // <- bez ukośnika na końcu!
+  const res = await fetch(`${API_URL}/users`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania użytkowników");
   return res.json();
 }
