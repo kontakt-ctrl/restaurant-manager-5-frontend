@@ -47,6 +47,7 @@ export default function MenuEditPage() {
   const mutation = useMutation({
     mutationFn: (data: any) => {
       const payload = {
+        ...(isEdit ? { id: Number(id) } : {}),
         category_id: Number(data.category_id),
         name_pl: data.name_pl,
         name_en: data.name_en,
