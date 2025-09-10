@@ -23,6 +23,52 @@ export async function getMe(token: string) {
   return res.json();
 }
 
+// Kategorie menu
+export async function getCategories() {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/menu/categories`, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania kategorii");
+  return res.json();
+}
+
+// Dodaj kategorię
+export async function createCategory(data: { name_pl: string; name_en: string; image_url: string }) {
+  const token = localStorage.getItem("token")!;
+  // API wymaga id, name_pl, name_en, image_url
+  const body = { id: 0, ...data }; // id = 0, backend zignoruje
+  const res = await fetch(`${API_URL}/menu/categories`, {
+    method: "POST",
+    headers: { ...authHeader(token), "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error("Błąd dodawania kategorii");
+  return res.json();
+}
+
+// Edytuj kategorię
+export async function updateCategory(id: number, data: { name_pl: string; name_en: string; image_url: string }) {
+  const token = localStorage.getItem("token")!;
+  const body = { id, ...data };
+  const res = await fetch(`${API_URL}/menu/categories/${id}`, {
+    method: "PUT",
+    headers: { ...authHeader(token), "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error("Błąd edycji kategorii");
+  return res.json();
+}
+
+// Usuń kategorię
+export async function deleteCategory(id: number) {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/menu/categories/${id}`, {
+    method: "DELETE",
+    headers: authHeader(token),
+  });
+  if (!res.ok) throw new Error("Błąd usuwania kategorii");
+  return res.json();
+}
+
 // Orders
 export async function getPendingOrders() {
   const token = localStorage.getItem("token")!;
