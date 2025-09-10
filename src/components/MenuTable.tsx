@@ -2,6 +2,7 @@ import React from "react";
 import {
   Table, TableHead, TableRow, TableCell, TableBody, Button, Chip,
 } from "@mui/material";
+import { Link as RouterLink } from "react-router-dom";
 
 export function MenuTable({
   items,
@@ -54,7 +55,8 @@ export function MenuTable({
               <Button
                 size="small"
                 variant="outlined"
-                href={`/menu/${item.id}/edit`}
+                component={RouterLink}
+                to={`/menu/${item.id}/edit`}
                 sx={{ ml: 1 }}
               >
                 Edytuj
