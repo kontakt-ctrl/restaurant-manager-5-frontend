@@ -3,7 +3,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getMenuItem, updateMenuItem, getMenuCategories, createMenuItem } from "../services/api";
 import { Loading } from "../components/Loading";
-import { Typography, TextField, Button, MenuItem, Box } from "@mui/material";
+import { Typography, TextField, Button, MenuItem, Box, FormControlLabel, Switch } from "@mui/material";
 
 export default function MenuEditPage() {
   const { id } = useParams<{ id?: string }>();
@@ -17,7 +17,7 @@ export default function MenuEditPage() {
     enabled: isEdit,
   });
 
-  // Dodajemy pole name_en do stanu!
+  // Dodaj pole is_available do stanu!
   const [form, setForm] = useState<any>(null);
 
   useEffect(() => {
@@ -29,6 +29,7 @@ export default function MenuEditPage() {
           name_en: menuItem.name_en ?? "",
           price_cents: String(menuItem.price_cents ?? ""),
           image_url: menuItem.image_url ?? "",
+          is_available: menuItem.is_available ?? true,
         });
       }
     } else {
@@ -38,20 +39,20 @@ export default function MenuEditPage() {
         name_en: "",
         price_cents: "",
         image_url: "",
+        is_available: true,
       });
     }
   }, [menuItem, isEdit]);
 
   const mutation = useMutation({
     mutationFn: (data: any) => {
-      // Dodajemy przekazanie wszystkich pól wymaganych przez backend!
       const payload = {
         category_id: Number(data.category_id),
         name_pl: data.name_pl,
         name_en: data.name_en,
         price_cents: Number(data.price_cents),
         image_url: data.image_url,
-        is_available: menuItem?.is_available ?? true, // domyślnie true lub stan z backendu
+        is_available: Boolean(data.is_available),
       };
       if (isEdit) return updateMenuItem(Number(id), payload);
       return createMenuItem(payload);
@@ -63,8 +64,11 @@ export default function MenuEditPage() {
   });
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
-    const { name, value } = e.target;
-    setForm((f: any) => ({ ...f, [name]: value }));
+    const { name, value, type, checked } = e.target;
+    setForm((f: any) => ({
+      ...f,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   }
 
   function handleSubmit(e: React.FormEvent) {
@@ -120,6 +124,18 @@ export default function MenuEditPage() {
             />
           </Box>
         )}
+        <FormControlLabel
+          control={
+            <Switch
+              checked={!!form.is_available}
+              onChange={handleChange}
+              name="is_available"
+              color="primary"
+            />
+          }
+          label="Dostępna pozycja"
+          sx={{ mt: 2 }}
+        />
         <Button variant="contained" type="submit" sx={{ mt: 2 }}>
           {isEdit ? "Zapisz" : "Dodaj"}
         </Button>
