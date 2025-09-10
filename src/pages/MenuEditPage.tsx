@@ -28,6 +28,7 @@ export default function MenuEditPage() {
           category_id: String(menuItem.category_id ?? ""),
           name_pl: menuItem.name_pl ?? "",
           price_cents: String(menuItem.price_cents ?? ""),
+          image_url: menuItem.image_url ?? "",
         });
       }
     } else {
@@ -35,6 +36,7 @@ export default function MenuEditPage() {
         category_id: "",
         name_pl: "",
         price_cents: "",
+        image_url: "",
       });
     }
   }, [menuItem, isEdit]);
@@ -88,6 +90,24 @@ export default function MenuEditPage() {
           required fullWidth margin="normal" />
         <TextField label="Cena (gr)" name="price_cents" type="number" value={form.price_cents} onChange={handleChange}
           required fullWidth margin="normal" />
+        <TextField
+          label="Adres obrazka (URL)"
+          name="image_url"
+          value={form.image_url}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+        />
+        {form.image_url && (
+          <Box sx={{ my: 2, textAlign: "center" }}>
+            <img
+              src={form.image_url}
+              alt="Podgląd obrazka"
+              style={{ maxWidth: 200, maxHeight: 150, border: "1px solid #eee" }}
+              onError={e => { (e.target as HTMLImageElement).style.display = "none"; }}
+            />
+          </Box>
+        )}
         <Button variant="contained" type="submit" sx={{ mt: 2 }}>
           {isEdit ? "Zapisz" : "Dodaj"}
         </Button>
