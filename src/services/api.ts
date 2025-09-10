@@ -82,12 +82,12 @@ export async function getOrderDetails(id: number) {
   return res.json();
 }
 
-// Nowa funkcja: pobieranie zrealizowanych zamówień po dacie
+// Pobierz zrealizowane zamówienia po dacie (status = 'ready')
 export async function getCompletedOrders(date: string) {
   const token = localStorage.getItem("token")!;
   const date_from = date;
   const date_to = date;
-  const url = `${API_URL}/orders?status=completed&date_from=${date_from}&date_to=${date_to}`;
+  const url = `${API_URL}/orders?status=ready&date_from=${date_from}&date_to=${date_to}`;
   const res = await fetch(url, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania zrealizowanych zamówień");
   return res.json();
