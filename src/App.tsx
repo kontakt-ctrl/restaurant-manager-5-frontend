@@ -11,9 +11,9 @@ import StatsPage from "./pages/StatsPage";
 import UsersPage from "./pages/UsersPage";
 import UserEditPage from "./pages/UserEditPage";
 import MainLayout from "./layouts/MainLayout";
-// Nowe importy
 import CategoriesPage from "./pages/CategoriesPage";
 import CategoryEditPage from "./pages/CategoryEditPage";
+import CompletedOrdersPage from "./pages/CompletedOrdersPage";
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user } = useAuth();
@@ -29,6 +29,7 @@ export default function App() {
         <Route path="/" element={<Navigate to="/dashboard" />} />
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/orders" element={<OrdersPage />} />
+        <Route path="/orders/completed" element={<CompletedOrdersPage />} />
         <Route path="/orders/:id" element={<OrderDetailsPage />} />
         <Route path="/menu" element={<MenuPage />} />
         <Route path="/menu/new" element={<MenuEditPage />} />
