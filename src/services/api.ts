@@ -1,3 +1,5 @@
+import { MenuItem, Payment } from "./types";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
 function authHeader(token?: string) {
@@ -31,7 +33,6 @@ export async function getCategories() {
   return res.json();
 }
 
-// Dodaj kategorię
 export async function createCategory(data: { name_pl: string; name_en: string; image_url: string }) {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/menu/categories`, {
@@ -43,7 +44,6 @@ export async function createCategory(data: { name_pl: string; name_en: string; i
   return res.json();
 }
 
-// Edytuj kategorię
 export async function updateCategory(id: number, data: { name_pl: string; name_en: string; image_url: string }) {
   const token = localStorage.getItem("token")!;
   const body = { id, ...data };
@@ -56,7 +56,6 @@ export async function updateCategory(id: number, data: { name_pl: string; name_e
   return res.json();
 }
 
-// Usuń kategorię
 export async function deleteCategory(id: number) {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/menu/categories/${id}`, {
@@ -82,11 +81,8 @@ export async function getOrderDetails(id: number) {
   return res.json();
 }
 
-// Pobierz zrealizowane zamówienia po dacie (status = 'ready')
-// date_to ustawione na dzień po wybranej dacie
 export async function getCompletedOrders(date: string) {
   const token = localStorage.getItem("token")!;
-  // Dodaj 1 dzień do daty
   const date_from = date;
   const dateObj = new Date(date);
   dateObj.setDate(dateObj.getDate() + 1);
@@ -97,23 +93,15 @@ export async function getCompletedOrders(date: string) {
   return res.json();
 }
 
-// BRAK takiego endpointu w backendzie – wywołanie zwróci błąd!
-export async function getOrderEvents(id: number) {
-  const token = localStorage.getItem("token")!;
-  const res = await fetch(`${API_URL}/orders/${id}/events`, { headers: authHeader(token) });
-  if (!res.ok) throw new Error("Błąd pobierania historii zamówienia");
-  return res.json();
-}
-
 // Menu
-export async function getMenuItems() {
+export async function getMenuItems(): Promise<MenuItem[]> {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/menu/items`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Błąd pobierania menu");
   return res.json();
 }
 
-export async function getMenuItem(id: number) {
+export async function getMenuItem(id: number): Promise<MenuItem> {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/menu/items/${id}`, { headers: authHeader(token) });
   if (!res.ok) throw new Error("Nie znaleziono pozycji menu");
@@ -179,7 +167,52 @@ export async function deleteMenuItem(id: number) {
   return res.json();
 }
 
-// Stats (MAPOWANIE do formatu oczekiwanego przez frontend)
+// Payments
+export async function getPayments(): Promise<Payment[]> {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/payments`, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania płatności");
+  return res.json();
+}
+
+export async function getPayment(id: number): Promise<Payment> {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/payments/${id}`, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania płatności");
+  return res.json();
+}
+
+export async function createPayment(data: Omit<Payment, 'id' | 'created_at'>) {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/payments`, {
+    method: "POST",
+    headers: { ...authHeader(token), "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
+  if (!res.ok) throw new Error("Błąd dodawania płatności");
+  return res.json();
+}
+
+export async function getPaymentsByOrderNumber(order_number: number): Promise<Payment[]> {
+  const token = localStorage.getItem("token")!;
+  const res = await fetch(`${API_URL}/payments?order_number=${order_number}`, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania płatności");
+  return res.json();
+}
+
+// Statystyki płatności wg dnia
+export async function getPaymentsStatsByDay(date: string) {
+  const token = localStorage.getItem("token")!;
+  const dateObj = new Date(date);
+  dateObj.setDate(dateObj.getDate() + 1);
+  const date_to = dateObj.toISOString().slice(0, 10);
+  const url = `${API_URL}/payments?date_from=${date}&date_to=${date_to}`;
+  const res = await fetch(url, { headers: authHeader(token) });
+  if (!res.ok) throw new Error("Błąd pobierania statystyk płatności");
+  return res.json();
+}
+
+// Stats
 export async function getOrdersDailyStats() {
   const token = localStorage.getItem("token")!;
   const res = await fetch(`${API_URL}/stats/orders/daily`, { headers: authHeader(token) });
@@ -202,10 +235,8 @@ export async function getBestsellers() {
   }));
 }
 
-// --- Statystyki dzienne dla wybranej daty ---
 export async function getOrdersStatsByDay(date: string) {
   const token = localStorage.getItem("token")!;
-  // date_to = date + 1 dzień
   const dateObj = new Date(date);
   dateObj.setDate(dateObj.getDate() + 1);
   const date_to = dateObj.toISOString().slice(0, 10);
