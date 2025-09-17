@@ -14,12 +14,17 @@ import {
   BarChart,
   Bar,
   ResponsiveContainer,
-  Label
+  Label,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
 } from "recharts";
 import {
   getOrdersStatsByDay,
   getBestSellersByDay,
-  getOrderHoursStatsByDay
+  getOrderHoursStatsByDay,
+  getPaymentsStatsByDay,
 } from "../services/api";
 
 // DatePicker
@@ -37,10 +42,16 @@ function DatePicker({ value, onChange }: { value: string, onChange: (v: string) 
   );
 }
 
+const STATUS_COLORS: Record<string, string> = {
+  completed: "#1976d2",
+  pending: "#ffa726",
+  failed: "#e53935",
+};
+
 export default function StatsPage() {
   const [date, setDate] = useState(() => dayjs().format("YYYY-MM-DD"));
 
-  // Liczba zamówień (cały dzień)
+  // Zamówienia (cały dzień)
   const { data: ordersStats, isLoading: isOrdersLoading, error: ordersError } = useQuery({
     queryKey: ["stats", "orders", date],
     queryFn: () => getOrdersStatsByDay(date),
@@ -58,8 +69,14 @@ export default function StatsPage() {
     queryFn: () => getOrderHoursStatsByDay(date),
   });
 
-  if (isOrdersLoading || isBestsellersLoading || isHoursLoading) return <Loading />;
-  if (ordersError || bestsellersError || hoursError) return <ErrorInfo error={ordersError || bestsellersError || hoursError} />;
+  // Statystyki płatności
+  const { data: payments, isLoading: isPaymentsLoading, error: paymentsError } = useQuery({
+    queryKey: ["stats", "payments", date],
+    queryFn: () => getPaymentsStatsByDay(date),
+  });
+
+  if (isOrdersLoading || isBestsellersLoading || isHoursLoading || isPaymentsLoading) return <Loading />;
+  if (ordersError || bestsellersError || hoursError || paymentsError) return <ErrorInfo error={ordersError || bestsellersError || hoursError || paymentsError} />;
 
   // Przygotowanie danych do wykresów
   const bestsellerChartData = (bestsellers || []).map((item: any, idx: number) => ({
@@ -69,8 +86,30 @@ export default function StatsPage() {
   }));
 
   const hoursChartData = (hoursStats || []).map((stat: any) => ({
-    godzina: stat.hour, // np. '09', '10', '11', ...
+    godzina: stat.hour,
     Zamówienia: stat.count,
+  }));
+
+  // Statystyki płatności
+  const paymentsStats = payments || [];
+  const sumPayments = paymentsStats.reduce((acc: number, p: any) => acc + (p.amount_cents || 0), 0) / 100;
+  const countPayments = paymentsStats.length;
+  const statusCount = paymentsStats.reduce((acc: Record<string, number>, p: any) => {
+    acc[p.status] = (acc[p.status] || 0) + 1;
+    return acc;
+  }, {});
+  const paymentsByTerminal = Object.entries(paymentsStats.reduce((acc: Record<string, number>, p: any) => {
+    acc[p.hostname] = (acc[p.hostname] || 0) + p.amount_cents;
+    return acc;
+  }, {})).map(([hostname, total]) => ({
+    hostname,
+    total: (total / 100).toFixed(2),
+  }));
+
+  const pieData = Object.entries(statusCount).map(([status, count]) => ({
+    name: status,
+    value: count,
+    fill: STATUS_COLORS[status] || "#888",
   }));
 
   return (
@@ -92,58 +131,4 @@ export default function StatsPage() {
         </Grid>
         <Grid item xs={12} md={8}>
           <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Najlepiej sprzedające się produkty (wykres kreskowy)</Typography>
-            <ResponsiveContainer width="100%" minHeight={420}>
-              <LineChart
-                data={bestsellerChartData}
-                margin={{ top: 40, right: 60, left: 20, bottom: 90 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="name"
-                  angle={-30}
-                  textAnchor="end"
-                  interval={0}
-                  height={85}
-                  style={{ fontSize: 15, fontFamily: "Roboto, Arial, sans-serif" }}
-                />
-                <YAxis allowDecimals={false}>
-                  <Label angle={-90} value="Sprzedano" position="insideLeft" style={{ fontSize: 16 }} />
-                </YAxis>
-                <Tooltip />
-                <Line type="monotone" dataKey="Sprzedano" stroke="#1976d2" strokeWidth={3} dot={{ r: 5 }} />
-              </LineChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-        <Grid item xs={12}>
-          <Paper sx={{ p: 2 }}>
-            <Typography variant="h6" sx={{ mb: 2 }}>Godziny szczytu (najwięcej zamówień wg godzin)</Typography>
-            <ResponsiveContainer width="100%" minHeight={360}>
-              <BarChart
-                data={hoursChartData}
-                margin={{ top: 40, right: 40, left: 25, bottom: 60 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis
-                  dataKey="godzina"
-                  interval={0}
-                  angle={0}
-                  height={50}
-                  style={{ fontSize: 15, fontFamily: "Roboto, Arial, sans-serif" }}
-                >
-                  <Label value="Godzina" position="insideBottom" style={{ fontSize: 16 }} />
-                </XAxis>
-                <YAxis allowDecimals={false}>
-                  <Label angle={-90} value="Zamówienia" position="insideLeft" style={{ fontSize: 16 }} />
-                </YAxis>
-                <Tooltip />
-                <Bar dataKey="Zamówienia" fill="#1976d2" barSize={32} />
-              </BarChart>
-            </ResponsiveContainer>
-          </Paper>
-        </Grid>
-      </Grid>
-    </>
-  );
-}
+            <Typography variant="h6" sx={{ mb: 2 }}>Najlepiej sprzedające
