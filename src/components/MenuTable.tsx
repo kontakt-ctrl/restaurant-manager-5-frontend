@@ -9,7 +9,7 @@ export function MenuTable({
   categories,
   onBlock,
   onUnblock,
-  onDelete, // <-- nowy props
+  onDelete,
 }: {
   items: any[];
   categories: any[];
@@ -27,6 +27,7 @@ export function MenuTable({
           <TableCell>Nazwa</TableCell>
           <TableCell>Kategoria</TableCell>
           <TableCell>Cena (PLN)</TableCell>
+          <TableCell>Składniki</TableCell>
           <TableCell>Dostępność</TableCell>
           <TableCell></TableCell>
         </TableRow>
@@ -37,6 +38,9 @@ export function MenuTable({
             <TableCell>{item.name_pl}</TableCell>
             <TableCell>{getCategoryName(item.category_id)}</TableCell>
             <TableCell>{(item.price_cents / 100).toFixed(2)}</TableCell>
+            <TableCell>
+              {item.ingredients ? item.ingredients : <span style={{ color: "#aaa" }}>Brak danych</span>}
+            </TableCell>
             <TableCell>
               {item.is_available === false ? (
                 <Chip label="Zablokowana" color="error" />
