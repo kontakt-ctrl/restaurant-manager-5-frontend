@@ -172,7 +172,7 @@ export default function StatsPage() {
             <Typography variant="h5">{sumPaymentsMonthValue.toFixed(2)} PLN</Typography>
           </Paper>
           <Paper sx={{ p: 2, mb: 2 }}>
-            <Typography variant="h6">Duże zamówienia (>100 PLN)</Typography>
+            <Typography variant="h6">{`Duże zamówienia (\u003e100 PLN)`}</Typography>
             <Typography variant="h5">{countPaymentsAbove100}</Typography>
           </Paper>
         </Grid>
