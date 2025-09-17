@@ -1,6 +1,7 @@
 import React from "react";
 import { Outlet, Link, useNavigate } from "react-router-dom";
-import { AppBar, Toolbar, Typography, Button, Box } from "@mui/material";
+import { AppBar, Toolbar, Typography, Button, Box, IconButton, Tooltip } from "@mui/material";
+import SupportAgentIcon from "@mui/icons-material/SupportAgent";
 import { useAuth } from "../providers/AuthProvider";
 
 export default function MainLayout() {
@@ -23,9 +24,25 @@ export default function MainLayout() {
           {user?.role === "admin" && (
             <Button color="inherit" component={Link} to="/users">Użytkownicy</Button>
           )}
-          <Button color="inherit" onClick={() => { logout(); navigate("/login"); }}>
-            Wyloguj
-          </Button>
+          <Box sx={{ display: "flex", alignItems: "center", gap: 1, ml: 2 }}>
+            <Tooltip title="Support Klienta / Helpdesk">
+              <IconButton
+                color="inherit"
+                href="https://support.move2.cloud"
+                target="_blank"
+                rel="noopener"
+                sx={{ p: 0.5 }}
+              >
+                <SupportAgentIcon />
+              </IconButton>
+            </Tooltip>
+            <Typography variant="body2" sx={{ mr: 2 }}>
+              Support Klienta / Helpdesk
+            </Typography>
+            <Button color="inherit" onClick={() => { logout(); navigate("/login"); }}>
+              Wyloguj
+            </Button>
+          </Box>
         </Toolbar>
       </AppBar>
       <Box sx={{ p: 3 }}>
