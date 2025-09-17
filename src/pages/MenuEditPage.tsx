@@ -45,6 +45,7 @@ export default function MenuEditPage() {
           price_cents: String(menuItem.price_cents ?? ""),
           image_url: menuItem.image_url ?? "",
           is_available: menuItem.is_available ?? true,
+          ingredients: menuItem.ingredients ?? "",
           ...LANG_FIELDS.reduce((acc, fld) => ({ ...acc, [fld.name]: menuItem[fld.name] ?? "" }), {}),
         });
       }
@@ -55,6 +56,7 @@ export default function MenuEditPage() {
         price_cents: "",
         image_url: "",
         is_available: true,
+        ingredients: "",
         ...LANG_FIELDS.reduce((acc, fld) => ({ ...acc, [fld.name]: "" }), {}),
       });
     }
@@ -69,6 +71,7 @@ export default function MenuEditPage() {
         price_cents: Number(data.price_cents),
         image_url: data.image_url,
         is_available: Boolean(data.is_available),
+        ingredients: data.ingredients,
         ...LANG_FIELDS.reduce((acc, fld) => ({ ...acc, [fld.name]: data[fld.name] }), {}),
       };
       if (isEdit) return updateMenuItem(Number(id), payload);
@@ -139,6 +142,15 @@ export default function MenuEditPage() {
           onChange={handleChange}
           fullWidth
           margin="normal"
+        />
+        <TextField
+          label="Składniki"
+          name="ingredients"
+          value={form.ingredients}
+          onChange={handleChange}
+          fullWidth
+          margin="normal"
+          placeholder="np. mąka, sos pomidorowy, ser mozzarella"
         />
         {form.image_url && (
           <Box sx={{ my: 2, textAlign: "center" }}>
